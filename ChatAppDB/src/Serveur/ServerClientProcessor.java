@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
+
 import addon.MyDate;
 
 public class ServerClientProcessor implements Runnable{
@@ -16,6 +17,8 @@ public class ServerClientProcessor implements Runnable{
     ServerBack bs;
     int ID;
     boolean closeConnexion;
+    
+    String splitCharacter = "\\|";
    
     public ServerClientProcessor(Socket pSock, ServerBack _bs, int _ID){
         sock = pSock;
@@ -68,35 +71,38 @@ public class ServerClientProcessor implements Runnable{
     }
    
     //interpret what was in the buffer, core fonction
-    private void InterpretResponse(String response){
-        String[] responseA = response.split("@",2);
-        System.out.println(response);
-        switch (responseA[0]){
-            case "msg" : 
-                System.out.println("interpreted as message");
-                DataMessage msg = TranslateToMsg(responseA[1]);
-                bs.SaveMessageToDB(msg);
-                bs.broadcast(msg, ID);
-                ServeurInterface.PrintNewMessage(msg);
-                break;
-            
-            case "join":
-                System.out.println("interpreted as join");
-                bs.SetClientID(ID, IDClient, this);
-                ServeurInterface.PrintLogin(responseA[1]);
-                break;
-                
-            case "load":
-                System.out.println("interpreted as load");
-                LoadAndSendMessages(responseA[1]);
-                break;
-                
-            case "close" : 
-                closeConnexion = true;
-                break;
-            
-            default:
-        }
+    private void InterpretResponse(String responses){
+    	String[] responsesA = responses.split(splitCharacter);
+        for (String response : responsesA) {
+			String[] responseA = response.split("@", 2);
+			System.out.println(response);
+			switch (responseA[0]) {
+			case "msg":
+				System.out.println("interpreted as message");
+				DataMessage msg = TranslateToMsg(responseA[1]);
+				bs.SaveMessageToDB(msg);
+				bs.broadcast(msg, ID);
+				ServeurInterface.PrintNewMessage(msg);
+				break;
+
+			case "join":
+				System.out.println("interpreted as join");
+				bs.SetClientID(ID, IDClient, this);
+				ServeurInterface.PrintLogin(responseA[1]);
+				break;
+
+			case "load":
+				System.out.println("interpreted as load");
+				LoadAndSendMessages(responseA[1]);
+				break;
+
+			case "close":
+				closeConnexion = true;
+				break;
+
+			default:
+			}
+		}
     }
     
     //send the msg to the client

@@ -21,8 +21,14 @@ public class MyDate{
         date = LocalDateTime.of(year, mounth, day, hour, minute, second);
     }
     
-    public MyDate(java.sql.Date _date){
+    public MyDate(LocalDateTime _date){
+        date = _date;
+    }
+    
+    public MyDate(java.sql.Timestamp _date){
+    	System.out.println("not yet converted");
         date = ToLocalDateTime(_date);
+    	System.out.println("converted");
     }
     
     public MyDate(String sDate){
@@ -47,9 +53,13 @@ public class MyDate{
     }
     
     //take java.sql.MyDate and transform to java.time.LocalDateTime
-    private LocalDateTime ToLocalDateTime(java.sql.Date dateToConvert) {
+    private LocalDateTime ToLocalDateTime(java.sql.Timestamp dateToConvert) {
     return dateToConvert.toInstant()
       .atZone(ZoneId.systemDefault())
       .toLocalDateTime();
+    }
+    
+    public static MyDate now() {
+    	return new MyDate(LocalDateTime.now());
     }
 }
