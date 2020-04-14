@@ -30,7 +30,7 @@ public class DataMessage {
     }
     
     public String ToSend(){
-        String toReturn = "msg@" + sender + "@" + convID + "@" + date.ToSend() + "@" + msgText;
+        String toReturn = "msg@" + sender + "@" + convID + "@" + date.ToSend() + "@" + msgText + "|";
         return toReturn;
     }
     

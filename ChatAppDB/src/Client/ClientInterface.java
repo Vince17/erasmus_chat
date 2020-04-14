@@ -1,7 +1,6 @@
 package Client;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import addon.MyDate;
  /**
  *
  * @author damie
@@ -14,7 +13,9 @@ public class ClientInterface extends javax.swing.JFrame {
     
     static boolean closeConnexion = false;
     
-    LocalDateTime minDate = LocalDateTime.of(1,1,1,1,1,1);
+    static String splitCharacter = "\\|";
+    
+    MyDate minDate = new MyDate(1,1,1,1,1,1);
     
     public ClientInterface() {
         initComponents();
@@ -104,13 +105,13 @@ public class ClientInterface extends javax.swing.JFrame {
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
         String msgText;  
         msgText = (jTextField1.getText()).trim();
-        DataMessage msg = new DataMessage(IDClient, 1, LocalDateTime.now(), msgText);
+        DataMessage msg = new DataMessage(IDClient, 1, MyDate.now(), msgText);
         bc.sendMsg(msg);
         DisplayMsg.setText(DisplayMsg.getText() + "\n\t" + IDClient + " : " + msgText);
         jTextField1.setText("");
     }//GEN-LAST:event_sendButtonActionPerformed
 
-    //hit button connect, will diseaper
+    //hit button connect, will disappear
     private void ConnectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConnectButtonActionPerformed
         try {
             IDClient = IDField.getText().trim();
@@ -136,34 +137,38 @@ public class ClientInterface extends javax.swing.JFrame {
             String msgIn = "";
             while (!closeConnexion) { 
                 System.out.println("attente de la reponse");
-                String response = bc.read();
+                String responses = bc.read();
                 System.out.println("reception de la reponse");
-                InterpretResponse(response);
+                InterpretResponse(responses);
             }
         } catch (Exception e) {}
     }
     
     //same as server side
-    private static void InterpretResponse(String response){
-        String[] responseA = response.split("@",2);
-        switch (responseA[0]){
-            case "msg" : 
-                System.out.println("reponse en msg");
-                DataMessage msg = TranslateToMsg(responseA[1]);
-                PrintNewMessage(msg);
-                break;
-            
-            case "join":
-                System.out.println("reponse en join");
-                PrintLogin(responseA[1]);
-                break;
-                
-            case "close" : 
-                closeConnexion = true;
-                break;
-            
-            default:
-        }
+    private static void InterpretResponse(String responses){
+    	String[] responsesA = responses.split("\\|");
+        for (String response : responsesA) {
+			String[] responseA = response.split("@", 2);
+			switch (responseA[0]) {
+			case "msg":
+				System.out.println("interpret as msg");
+				DataMessage msg = TranslateToMsg(responseA[1]);
+				System.out.println("translate done");
+				PrintNewMessage(msg);
+				break;
+
+			case "join":
+				System.out.println("interpret as join");
+				PrintLogin(responseA[1]);
+				break;
+
+			case "close":
+				closeConnexion = true;
+				break;
+
+			default:
+			}
+		}
     }
     
     //print message in the textbox
@@ -178,13 +183,9 @@ public class ClientInterface extends javax.swing.JFrame {
     }
     
     private static DataMessage TranslateToMsg(String responce){
+    	System.out.println(responce);
         String[] data = responce.split("@",4);
-        String[] dateFrac = data[2].split("-");
-        int[] dateFracInt = new int[6];
-        for(int i = 0; i<6; i++){
-            dateFracInt[i] = Integer.parseInt(dateFrac[i]);
-        }
-        LocalDateTime date = LocalDateTime.of(dateFracInt[0],dateFracInt[1],dateFracInt[2],dateFracInt[3],dateFracInt[4],dateFracInt[5]);
+        MyDate date = new MyDate(data[2]);
         return new DataMessage(data[0], Integer.parseInt(data[1]), date, data[3]);
     }
 

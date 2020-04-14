@@ -4,8 +4,7 @@
  * and open the template in the editor.
  */
 package Client;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import addon.MyDate;
 
 /**
  *
@@ -14,13 +13,11 @@ import java.time.format.DateTimeFormatter;
 public class DataMessage {
 
     String sender;
-    LocalDateTime date;
+    MyDate date;
     int convID;
     String msgText;
-    DateTimeFormatter  toPrint = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-    DateTimeFormatter  toSend = DateTimeFormatter.ofPattern("dd-MM-yyyy-HH-mm-ss");
     
-    DataMessage(String _sender, int _convID, LocalDateTime _date, String _msgText){
+    DataMessage(String _sender, int _convID, MyDate _date, String _msgText){
         sender = _sender;
         date = _date;
         convID = _convID;
@@ -28,12 +25,12 @@ public class DataMessage {
     }
     
     public String ToPrint(){
-        String toReturn = sender + " [" + toPrint.format(date) + "] : " + msgText;
+        String toReturn = sender + " [" + date.ToPrint() + "] : " + msgText;
         return toReturn;
     }
     
     public String ToSend(){
-        String toReturn = "msg@" + sender + "@" + convID + "@" + toSend.format(date) + "@" + msgText;
+        String toReturn = "msg@" + sender + "@" + convID + "@" + date.ToSend() + "@" + msgText+ "|";
         return toReturn;
     }
     
@@ -41,7 +38,7 @@ public class DataMessage {
         return sender;
     }
 
-    public LocalDateTime getDate() {
+    public MyDate getDate() {
         return date;
     }
 

@@ -12,6 +12,8 @@ import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import addon.MyDate;
+
 /**
  *
  * @author damie
@@ -67,10 +69,10 @@ public class ClientBack {
         } catch (Exception e) {}
     }
     
-    public void loadMessages(int convID, LocalDateTime date){
+    public void loadMessages(int convID, MyDate date){
         try {
             System.out.println("Trying to load");
-            String msgOut = "load@"+ convID + "@" + toSend.format(date);
+            String msgOut = "load@"+ convID + "@" + date.ToSend();
             writer.write(msgOut);
             writer.flush();            
         } catch (Exception e) {}
